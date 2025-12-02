@@ -1,0 +1,25 @@
+version: '3'
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: race
+    ports:
+      - 8888:8888
+    environment:
+      - LOG_LEVEL=INFO
+      - MONGODB_URL=mongodb://mongodb/race?uuidRepresentation=standard&readPreference=secondaryPreferred&connectTimeoutMS=4000&maxIdleTimeMS=90000&heartbeatFrequencyMS=12000&w=majority&wTimeoutMS=6000
+      - MONGODB_DBNAME=race
+      - MAX_CONNECTIONS_COUNT=10
+      - MIN_CONNECTIONS_COUNT=3
+    depends_on:
+      - mongodb
+
+  mongodb:
+    image: mongo:4.4
+    container_name: mongodb
+    volumes:
+      - /tmp/mongo:/data/db
+    ports:
+      - 27017:27017
