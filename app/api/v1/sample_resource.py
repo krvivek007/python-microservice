@@ -1,6 +1,8 @@
 from fastapi import APIRouter, Depends, Response
 import logging
 from uuid import UUID
+from typing import Dict
+from typing import Any
 
 from ...db.db import get_db, AsyncIOMotorClient
 from ...dao.sample_resource import create_sample_resource as \
@@ -14,6 +16,8 @@ from ...error import UnprocessableError
 from ...models.create_sample_resource import \
     CreateSampleResourceReq, CreateSampleResourceResp
 from ...models.get_sample_resource import GetSampleResourceResp
+from app.security.keycloak_auth import get_current_user
+
 
 router = APIRouter()
 
@@ -26,7 +30,8 @@ router = APIRouter()
              )
 async def create_sample_resource(
     sample_resource_data: CreateSampleResourceReq,
-    db: AsyncIOMotorClient = Depends(get_db)
+    db: AsyncIOMotorClient = Depends(get_db),
+    current_user: Dict[str, Any] = Depends(get_current_user)
 ):
     logging.info('Receive create sample resource request')
 
@@ -47,6 +52,7 @@ async def create_sample_resource(
 async def get_sample_resource(
     resource: UUID,
     db: AsyncIOMotorClient = Depends(get_db),
+    current_user: Dict[str, Any] = Depends(get_current_user)
 ):
     logging.info(
         f'Receive get sample resource {uuid_masker(resource)} request'
@@ -73,6 +79,7 @@ async def update_sample_resource(
     resource_id: UUID,
     sample_resource_data: CreateSampleResourceReq,
     db: AsyncIOMotorClient = Depends(get_db),
+    current_user: Dict[str, Any] = Depends(get_current_user)
 ):
     logging.info(
         f'Receive update sample resource {uuid_masker(resource_id)} request'
@@ -98,6 +105,7 @@ async def update_sample_resource(
 async def delete_sample_resource(
     resource_id: UUID,
     db: AsyncIOMotorClient = Depends(get_db),
+    current_user: Dict[str, Any] = Depends(get_current_user)
 ):
     logging.info(
         f'Receive delete sample resource {uuid_masker(resource_id)} request'

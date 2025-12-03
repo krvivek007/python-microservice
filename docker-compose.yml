@@ -15,6 +15,9 @@ services:
       - MIN_CONNECTIONS_COUNT=3
     depends_on:
       - mongodb
+      - keycloak
+    networks:
+      - app-network
 
   mongodb:
     image: mongo:4.4
@@ -23,3 +26,24 @@ services:
       - /tmp/mongo:/data/db
     ports:
       - 27017:27017
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0
+    container_name: keycloak
+    environment:
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./keycloak-init.sh:/opt/keycloak-init.sh
+    entrypoint: [ "/bin/bash", "/opt/keycloak-init.sh" ]
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  mongo_data:

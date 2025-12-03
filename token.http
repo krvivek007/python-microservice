@@ -1,0 +1,8 @@
+### Get Keycloak Access Token
+POST http://localhost:8080/auth/realms/myrealm/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+grant_type=client_credentials&client_id=fastapi-service&client_secret=my-secret
+
+
+
